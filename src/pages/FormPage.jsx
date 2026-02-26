@@ -4,6 +4,7 @@ import { submitForm } from "../server/gas";
 
 export default function FormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [predictionResult, setPredictionResult] = useState(null);
   const {
     register,
     handleSubmit,
@@ -32,10 +33,15 @@ export default function FormPage() {
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     try {
-      const response = await submitForm(data);
+      const responseString = await submitForm(data);
+      const response = JSON.parse(responseString); 
       console.log("Response dari Server:", response);
-      alert("Sukses! Cek console browser dan Executions log di Apps Script.");
-      reset(); 
+
+      if (response.status === 'success' && response.prediction) {
+        setPredictionResult(response.prediction); 
+      } else {
+        throw new Error(response.message || "Gagal mendapatkan hasil prediksi.");
+      }
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Gagal menyimpan data. Silakan coba lagi.");
@@ -44,10 +50,32 @@ export default function FormPage() {
     }
   };
 
+  const handleResetForm = () => {
+    setPredictionResult(null); // Sembunyikan kartu hasil
+    reset(); // Kosongkan semua field form
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+        {predictionResult ? (
+          <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 text-center animate-fade-in">
+            <h1 className="text-2xl font-bold mb-4 text-gray-800">Hasil Prediksi Gaya Belajar</h1>
+            <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 my-6 rounded-lg">
+              <p className="text-lg">Gaya belajar dominan Anda adalah:</p>
+              <p className="text-3xl font-extrabold my-2">{predictionResult.result}</p>
+              <p className="text-sm">Tingkat keyakinan: <strong>{predictionResult.percentage}%</strong></p>
+            </div>
+            <p className="text-gray-600 mb-6">Terima kasih telah mengisi kuesioner. Anda dapat mengisi kembali untuk siswa lain.</p>
+            <button
+              onClick={handleResetForm}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded focus:outline-none focus:shadow-outline transition duration-150"
+            >
+              Isi Formulir Lagi
+            </button>
+          </div>
+        ) : (
+          <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
           <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
             Formulir Data & Kuesioner Siswa
           </h1>
@@ -166,8 +194,9 @@ export default function FormPage() {
               </button>
             </div>
           </form>
+          </div>
+        )}
         </div>
       </div>
-    </div>
   );
 }
