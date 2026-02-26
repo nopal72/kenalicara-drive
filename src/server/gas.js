@@ -13,10 +13,28 @@ export function getSheetData(sheetName) {
   });
 }
 
-export function anotherFunction() {
-  // Function implementation
+export function submitForm(data) {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler((res) => {
+        resolve(res);
+      })
+      .withFailureHandler((msg) => {
+        reject(msg);
+      })
+      .submitForm(data);
+  });
 }
 
-export function yetAnotherFunction() {
-  // Function implementation
+export function testPredict() {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler((res) => {
+        resolve(res);
+      })
+      .withFailureHandler((msg) => {
+        reject(msg);
+      })
+      .testPredict();
+  });
 }

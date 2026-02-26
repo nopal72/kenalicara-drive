@@ -1,23 +1,47 @@
-const getSheetData = (name) => {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(name);
-  const dataRange = sheet.getDataRange();
-  const data = dataRange.getDisplayValues();
-  const heads = data.shift();
-  const obj = data.map((r) =>
-    heads.reduce((o, k, i) => ((o[k] = r[i] || ""), o), {})
-  );
-  return JSON.stringify(obj);
-};
+/**
+ * @file This file acts as a Controller/Orchestrator layer.
+ * It receives requests from the client, calls the necessary services (model, spreadsheet),
+ * and formats the response. It should not contain direct calls to `SpreadsheetApp` or `DriveApp`.
+ */
 
-const getSheetNamesAndHeaders = () => {
-  const sheets = SpreadsheetApp.getActiveSpreadsheet().getSheets();
-  const sheetNames = sheets.map((sheet) => sheet.getName());
-  
-  const headers = sheets.map((sheet) => {
-    const dataRange = sheet.getDataRange();
-    const headers = dataRange.getValues()[0];
-    return { [sheet.getName()]: headers };
+const submitForm = (data) => {
+  // --- Flow ---
+  // 1. Get prediction from the model service.
+  // 2. Save data and prediction to the spreadsheet service.
+  // 3. Return prediction result to the client.
+
+  // --- 1. PREDICTION ---
+  // Define the features required by the model
+  const modelFeatures = [
+    'a1', 'a2', 'a3', 'a4', 'a5',
+    'v1', 'v2', 'v3', 'v4', 'v5',
+    'k1', 'k2', 'k3', 'k4', 'k5'
+  ];
+
+  // Prepare the input for the model by selecting and converting features
+  const modelInput = {};
+  modelFeatures.forEach(feature => {
+    modelInput[feature] = parseFloat(data[feature] || 0);
   });
-  return { sheetNames, headers };
-}
 
+  // Call the prediction service (from model.js)
+  const predictionResult = predictXgboost(modelInput);
+  console.log("Hasil Prediksi dari Model:", JSON.stringify(predictionResult));
+
+  // --- 2. PERSISTENCE ---
+  try {
+    // Call the spreadsheet service (from spreadsheetService.js)
+    saveSubmission(data, predictionResult);
+  } catch (e) {
+    // Log the error but don't stop the flow. The user should still get their prediction.
+    console.error("Gagal menyimpan data ke Spreadsheet. Lanjutkan proses tanpa penyimpanan.");
+  }
+
+  // --- 3. RESPONSE ---
+  // Return a success response with the prediction data to the client.
+  return JSON.stringify({
+    status: "success",
+    message: "Prediksi berhasil dibuat.",
+    prediction: predictionResult
+  });
+};

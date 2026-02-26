@@ -8,7 +8,6 @@ function App() {
   return (
     <Router>
       <div className="app-container">
-        <Navbar />
         <div className="content">
           <Routes>
             {routes.map((route) => (

@@ -1,34 +1,17 @@
-import Profile from "./pages/Profile";
-import Contact from "./pages/Contact";
-import Tasks from "./pages/Tasks";
-import Settings from "./pages/Settings";
-import Home from "./pages/Home";
+import FormPage from "./pages/FormPage";
+
+// Gunakan pathname browser secara langsung sebagai URL Home.
+// Ini mencakup semua kondisi: /exec (Production), /dev (Test), dan localhost.
+const homeUrl = typeof window !== "undefined" ? window.location.pathname : "/";
+
+if (typeof window !== "undefined") {
+  console.log("Aplikasi dimuat. Home URL diatur ke:", homeUrl);
+}
 
 export const routes = [
   {
     title: "Home",
-    url: "/",
-    component: Home,
-  },
-  {
-    title: "Tasks",
-    url: "/Tasks",
-    component: Tasks,
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    component: Settings,
-  },
-  {
-    title: "Contact",
-    url: "/contact",
-    component: Contact,
-  },
-
-  {
-    title: "Profile",
-    url: "/profile",
-    component: Profile,
+    url: homeUrl,
+    component: FormPage,
   },
 ];
