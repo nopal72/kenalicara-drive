@@ -59,7 +59,7 @@ export default function FormPage() {
     <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         {predictionResult ? (
-          <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4 text-center animate-fade-in">
+          <div className="bg-white shadow-md rounded-lg px-4 sm:px-8 pt-6 pb-8 mb-4 text-center animate-fade-in">
             <h1 className="text-2xl font-bold mb-4 text-gray-800">Hasil Prediksi Gaya Belajar</h1>
             <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 my-6 rounded-lg">
               <p className="text-lg">Gaya belajar dominan Anda adalah:</p>
@@ -75,7 +75,7 @@ export default function FormPage() {
             </button>
           </div>
         ) : (
-          <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+          <div className="bg-white shadow-md rounded-lg px-4 sm:px-8 pt-6 pb-8 mb-4">
           <h1 className="text-2xl font-bold mb-6 text-center text-gray-800">
             Formulir Data & Kuesioner Siswa
           </h1>
