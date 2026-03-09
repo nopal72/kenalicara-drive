@@ -57,6 +57,8 @@ function predict(model, inputs){
   const learner = model.learner
   const trees = learner.gradient_booster.model.trees
   const num_class = parseInt(learner.learner_model_param.num_class)
+  // Ambil daftar nama fitur dari model untuk konversi index → nama key
+  const featureNames = learner.feature_names;
 
   // Skor awal untuk 3 array
   let rawScore = new Array(num_class).fill(0.0)
@@ -80,7 +82,12 @@ function predict(model, inputs){
       const featureIdx = tree.split_indices[nodeId];
       const threshold = tree.split_conditions[nodeId];
       
-      if (inputs[featureIdx] < threshold) {
+      // FIX: Gunakan nama fitur dari model untuk lookup, bukan index numerik
+      // Sebelumnya: inputs[featureIdx] → selalu undefined karena inputs adalah objek {a1, a2, ...}
+      const featureName = featureNames[featureIdx];
+      const featureValue = inputs[featureName];
+
+      if (featureValue < threshold) {
         nodeId = tree.left_children[nodeId];
       } else {
         nodeId = tree.right_children[nodeId];

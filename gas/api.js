@@ -26,7 +26,6 @@ const submitForm = (data) => {
 
   // Call the prediction service (from model.js)
   const predictionResult = predictXgboost(modelInput);
-  console.log("Hasil Prediksi dari Model:", JSON.stringify(predictionResult));
 
   // --- 2. PERSISTENCE ---
   try {
