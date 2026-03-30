@@ -13,6 +13,54 @@ h1 {
   color: #333;
 }
 
+/* ── Print / PDF styles ──────────────────────────────────────────────────────
+   Halaman 1: Identitas siswa + Distribusi probabilitas
+   Halaman 2: Rekomendasi belajar
+   ─────────────────────────────────────────────────────────────────────────── */
+@media print {
+  /* Ukuran kertas A4 dengan margin atas saja agar tidak terlalu menempel (Top: 2cm, Kanan: 1cm, Bawah: 1cm, Kiri: 1cm) */
+  @page {
+    size: A4;
+    margin: 2cm 1cm 1cm 1cm;
+  }
+
+  /* Pastikan warna background ikut tercetak (progress bar, card berwarna, dst) */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    background-color: white;
+    margin: 0;
+  }
+
+  /* Kompres container utama agar konten halaman 1 lebih ringkas */
+  .print-compact-container {
+    padding: 16px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+  }
+
+  /* Mulai section ini di halaman baru (dipakai untuk Rekomendasi → halaman 2) */
+  .print-new-page {
+    break-before: page;
+    page-break-before: always;
+  }
+
+  /* Jangan potong elemen di tengah halaman (dipakai per card strategi) */
+  .print-avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Kurangi ukuran font sedikit agar lebih muat di halaman */
+  .print-text-sm {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+}
+
 /* 
 @layer base {
   * {
