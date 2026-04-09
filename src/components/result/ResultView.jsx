@@ -1,3 +1,5 @@
+import { useRef } from "react";
+import html2pdf from "html2pdf.js";
 import {
   Eye, Headphones, Activity,
   BookOpen, PenLine, MonitorPlay,
@@ -192,10 +194,32 @@ export function ResultView({ predictionResult, studentData, onReset }) {
   const cfg = STYLE_CONFIG[dominant?.label] ?? STYLE_CONFIG.Visual;
   const rec = LEARNING_RECOMMENDATIONS[dominant?.label];
 
-  const handlePrint = () => window.print();
+  const contentRef = useRef(null);
+
+  const handlePrint = () => {
+    const element = contentRef.current;
+    if (!element) return;
+
+    const filename = studentData?.nama
+      ? `Laporan_Gaya_Belajar_${studentData.nama.replace(/\s+/g, '_')}.pdf`
+      : 'Laporan_Gaya_Belajar.pdf';
+
+    const opt = {
+      margin:      [8, 8, 8, 8],
+      filename,
+      image:       { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    };
+
+    html2pdf().set(opt).from(element).save();
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-white font-sans print:bg-white print:min-h-0">
+    <div className="min-h-screen bg-gradient-to-b from-amber-50 via-white to-white font-sans">
+
+      {/* ── Area yang akan di-capture html2pdf ─────────────────────────── */}
+      <div ref={contentRef} className="bg-gradient-to-b from-amber-50 via-white to-white">
 
       {/* ── Page title ─────────────────────────────────────────────────── */}
       <div className="text-center pt-6 pb-4 px-6 print:pt-4">
@@ -273,7 +297,7 @@ export function ResultView({ predictionResult, studentData, onReset }) {
       {/* ── Strategy cards ──────────────────────────────────────────────── */}
       {rec && (
         <div className="px-4 max-w-2xl mx-auto mb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 print:grid-cols-3 print:gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {rec.strategies.map((strategy, i) => {
               const Icon = cfg.strategyIcons[i] ?? cfg.icon;
               const BgIcon = cfg.strategyIcons[(i + 1) % cfg.strategyIcons.length] ?? cfg.icon;
@@ -291,14 +315,16 @@ export function ResultView({ predictionResult, studentData, onReset }) {
         </div>
       )}
 
-      {/* ── Action buttons — hidden on print ───────────────────────────── */}
-      <div className="flex flex-col sm:flex-row gap-3 px-4 max-w-2xl mx-auto pb-8 print:hidden">
+      </div>{/* ── akhir div contentRef (area yang di-capture pdf) ────────── */}
+
+      {/* ── Action buttons ───────────────────────────────────────────────── */}
+      <div className="flex flex-col sm:flex-row gap-3 px-4 max-w-2xl mx-auto py-6">
         <button
           onClick={handlePrint}
           className="flex-1 inline-flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-md hover:-translate-y-0.5"
         >
           <Printer className="w-5 h-5" />
-          Cetak / Unduh PDF
+          Unduh PDF
         </button>
         <button
           onClick={onReset}

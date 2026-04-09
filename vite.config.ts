@@ -6,7 +6,17 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "src"), // Create an alias '@' for the src directory
+      "@": path.resolve(__dirname, "src"),
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // Semua chunk digabung ke satu file — wajib untuk GAS HtmlService
+        inlineDynamicImports: true,
+        entryFileNames: "index-[hash].js",
+        format: "iife",
+      },
     },
   },
 });

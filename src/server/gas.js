@@ -38,3 +38,16 @@ export function testPredict() {
       .testPredict();
   });
 }
+
+export function generatePDF(data) {
+  return new Promise((resolve, reject) => {
+    google.script.run
+      .withSuccessHandler((res) => {
+        resolve(res);
+      })
+      .withFailureHandler((msg) => {
+        reject(msg);
+      })
+      .generatePDF(data);
+  });
+}

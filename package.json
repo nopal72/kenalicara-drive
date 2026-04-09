@@ -33,6 +33,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "gas-client": "^1.1.1",
+    "html2pdf.js": "^0.14.0",
     "localforage": "^1.10.0",
     "lucide-react": "^0.454.0",
     "match-sorter": "^7.0.0",
