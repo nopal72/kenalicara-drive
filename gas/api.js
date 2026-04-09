@@ -5,13 +5,7 @@
  */
 
 const submitForm = (data) => {
-  // --- Flow ---
-  // 1. Get prediction from the model service.
-  // 2. Save data and prediction to the spreadsheet service.
-  // 3. Return prediction result to the client.
 
-  // --- 1. PREDICTION ---
-  // Define the features required by the model
   const modelFeatures = [
     'a1', 'a2', 'a3', 'a4', 'a5',
     'v1', 'v2', 'v3', 'v4', 'v5',

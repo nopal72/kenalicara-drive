@@ -1,91 +1,114 @@
-const MODEL_ID = "1x5y9AtPw03truH3t52sZcpLjugKHZB1g"
+const MODEL_ID_A = "1v9FldZpsSqaWICoePCGg0zkCH69Umgmi";
+const MODEL_ID_K = "1IgWTRL16YtehF25yAyTUgg6ggWAPdAVI";
+const MODEL_ID_V = "1_aCPKS7QCRnaOZ4udw9ex5yp2hPq1AbP";
+
+var CACHED_MODELS = null;
 
 function testPredict() {
   // data dummy
   const dummyData = {
     a1: 5, a2: 5, a3: 5, a4: 5, a5: 5,
     v1: 1, v2: 1, v3: 1, v4: 1, v5: 1,
-    k1: 1, k2: 4, k3: 3, k4: 1, k5: 2
+    k1: 5, k2: 5, k3: 5, k4: 5, k5: 5
   }
 
-  return predictXgboost(dummyData)
+  const fullData = addConstructedFeatures(dummyData);
+
+  return predictXgboost(fullData)
+}
+
+function addConstructedFeatures(data) {
+  let processed = { ...data };
+
+  processed.auditory_score = (data.a1 || 0) + (data.a2 || 0) + (data.a3 || 0) + (data.a4 || 0) + (data.a5 || 0);
+  processed.visual_score = (data.v1 || 0) + (data.v2 || 0) + (data.v3 || 0) + (data.v4 || 0) + (data.v5 || 0);
+  processed.kinesthetic_score = (data.k1 || 0) + (data.k2 || 0) + (data.k3 || 0) + (data.k4 || 0) + (data.k5 || 0);
+
+  return processed;
 }
 
 // fungsi klasifikasi gaya belajar
-function predictXgboost(data){
-  console.log("Mulai prediksi....");
+function predictXgboost(data) {
+  console.time("Total_Inference");
+  const models = getModels();
 
-  // ambil model dulu
-  const model = getModelFromDrive();
+  console.log("data yang digunakan: ", data)
 
-  // cek feature sudah sesuai
-  const featureNames = model.learner.feature_names;
+  const probA = predictSingleModel(models.A, data);
+  const probK = predictSingleModel(models.K, data);
+  const probV = predictSingleModel(models.V, data);
 
-  console.log("Input vector yang diproses:", data)
-  console.log("Memulai klasifikasi.....")
+  const allProbabilities = {
+    "Auditori": probA,
+    "Kinestetik": probK,
+    "Visual": probV
+  };
 
-  // predict data
-  const hasil_prediksi = predict(model, data)
+  // Mencari nilai tertinggi (Argmax)
+  let predictedLabel = "Auditori";
+  let maxProb = probA;
 
-  console.log("Hasil prediksi:", hasil_prediksi)
+  if (probK > maxProb) {
+    maxProb = probK;
+    predictedLabel = "Kinestetik";
+  }
+  if (probV > maxProb) {
+    maxProb = probV;
+    predictedLabel = "Visual";
+  }
+
+  console.timeEnd("Total_Inference");
+  console.log("Hasil OvR:", predictedLabel, allProbabilities);
 
   return {
-    result: hasil_prediksi.label,
-    percentage: (hasil_prediksi.probability * 100).toFixed(2),
-    all_probabilities: hasil_prediksi.all_probabilities,
-    raw_scroe: hasil_prediksi.raw_scores
-  }
+    result: predictedLabel,
+    confidence: Number((maxProb * 100).toFixed(2)),
+    all_probabilities: allProbabilities
+  };
 }
 
 // function load model from google drive
-function getModelFromDrive() {
-  const model_ID = MODEL_ID
+function getModels() {
+  if (CACHED_MODELS) return CACHED_MODELS;
 
-  // ambil model dari google drive
-  const modelContent = DriveApp.getFileById(model_ID).getBlob().getDataAsString();
-  
-  // parse model dari JSON agar bisa dibaca di appscript
-  const modelJson = JSON.parse(modelContent);
+  console.log("Memuat 3 model dari Drive...");
+  const modelA = JSON.parse(DriveApp.getFileById(MODEL_ID_A).getBlob().getDataAsString());
+  const modelK = JSON.parse(DriveApp.getFileById(MODEL_ID_K).getBlob().getDataAsString());
+  const modelV = JSON.parse(DriveApp.getFileById(MODEL_ID_V).getBlob().getDataAsString());
 
-  console.log(modelJson.learner.feature_names)
-
-  return modelJson
+  CACHED_MODELS = { A: modelA, K: modelK, V: modelV };
+  return CACHED_MODELS;
 }
 
 // function predict 
-function predict(model, inputs){
-  const learner = model.learner
-  const trees = learner.gradient_booster.model.trees
-  const num_class = parseInt(learner.learner_model_param.num_class)
-  // Ambil daftar nama fitur dari model untuk konversi index → nama key
+function predictSingleModel(modelJson, inputs) {
+  const learner = modelJson.learner;
+  const trees = learner.gradient_booster.model.trees;
   const featureNames = learner.feature_names;
 
-  // Skor awal untuk 3 array
-  let rawScore = new Array(num_class).fill(0.0)
+  let rawScore = 0.0;
 
-  // telusuri tiap decicion tree
   for (let i = 0; i < trees.length; i++) {
-    const tree = trees[i]
-    const class_index = i % num_class
-    let nodeId = 0
+    const tree = trees[i];
+    let nodeId = 0;
+
+    if (tree.left_children.length <= 1 && tree.left_children[0] === -1) {
+      rawScore += tree.base_weights[0];
+      continue;
+    }
 
     while (true) {
-      const left_child = tree.left_children[nodeId]
+      const leftChild = tree.left_children[nodeId];
 
-      // Jika mencapai Leaf (Daun)
-      if (left_child === -1) {
-        rawScore[class_index] += tree.base_weights[nodeId];
-        break; 
+      if (leftChild === -1) {
+        rawScore += tree.base_weights[nodeId];
+        break;
       }
 
-      // Jika masih di Split Node (Cabang)
       const featureIdx = tree.split_indices[nodeId];
       const threshold = tree.split_conditions[nodeId];
-      
-      // FIX: Gunakan nama fitur dari model untuk lookup, bukan index numerik
-      // Sebelumnya: inputs[featureIdx] → selalu undefined karena inputs adalah objek {a1, a2, ...}
       const featureName = featureNames[featureIdx];
-      const featureValue = inputs[featureName];
+      const featureValue = inputs[featureName] || 0;
 
       if (featureValue < threshold) {
         nodeId = tree.left_children[nodeId];
@@ -95,30 +118,5 @@ function predict(model, inputs){
     }
   }
 
-  // Softmax Activation (Konversi logit ke probabilitas)
-  const maxScore = Math.max(...rawScore); 
-  const exps = rawScore.map(score => Math.exp(score - maxScore));
-  const sumExps = exps.reduce((acc, val) => acc + val, 0);
-  const probabilities = exps.map(expVal => expVal / sumExps);
-
-  // Penentuan Label Tertinggi
-  let predictedClassIndex = 0;
-  let highestProbability = probabilities[0];
-  
-  for (let j = 1; j < probabilities.length; j++) {
-    if (probabilities[j] > highestProbability) {
-      highestProbability = probabilities[j];
-      predictedClassIndex = j;
-    }
-  }
-
-  const labelMap = ["Auditori", "Kinestetik", "Visual"];
-  const predictedLabel = labelMap[predictedClassIndex];
-
-  return {
-    label: predictedLabel,
-    probability: highestProbability,
-    all_probabilities: probabilities,
-    raw_scores: rawScore
-  };
+  return 1 / (1 + Math.exp(-rawScore));
 }

@@ -1,15 +1,3 @@
-/**
- * @file Konten rekomendasi belajar per gaya belajar.
- *
- * ⚠️  FILE INI BERISI KONTEN DUMMY.
- *     Ganti seluruh teks yang dimulai dengan "[DUMMY]" dengan konten yang sesungguhnya.
- *
- * Struktur tiap gaya belajar:
- *   description  – Paragraf pengantar tentang gaya belajar tersebut
- *   strategies   – Daftar kelompok strategi, masing-masing berisi:
- *       title    – Judul strategi (boleh pakai emoji)
- *       tips     – Array kiat/langkah konkret
- */
 
 export const LEARNING_RECOMMENDATIONS = {
   // ── VISUAL ────────────────────────────────────────────────────────────────

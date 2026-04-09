@@ -1,22 +1,3 @@
-/**
- * @file ResultView – Halaman hasil klasifikasi gaya belajar.
- *
- * Desain mengacu pada template "Student Learning Style Report":
- *   - Header besar dengan gradient warm background
- *   - Student profile card (nama, kelas, no. absen)
- *   - SVG donut chart (vector, aman untuk print) + info gaya dominan
- *   - 3-column strategy cards dengan lucide icon sebagai ilustrasi
- *
- * Gambar/ilustrasi menggunakan lucide-react icons (SVG inline) karena:
- *   1) Tidak bergantung URL eksternal (aman untuk GAS)
- *   2) Vector — tercetak tajam di PDF
- *   3) Tidak menambah bundle size signifikan
- *
- * PRINT LAYOUT: 1 halaman A4
- *   Semua konten dicompact via print: Tailwind variants.
- *   @page rule di index.css mengatur margin A4.
- */
-
 import {
   Eye, Headphones, Activity,
   BookOpen, PenLine, MonitorPlay,
@@ -27,8 +8,6 @@ import {
 } from "lucide-react";
 import { LEARNING_RECOMMENDATIONS } from "../../data/recommendations";
 
-// ── Konfigurasi per gaya belajar ─────────────────────────────────────────────
-/** Urutan index sesuai output model XGBoost: 0=Auditori, 1=Kinestetik, 2=Visual */
 export const LABEL_MAP = ["Auditori", "Kinestetik", "Visual"];
 
 const STYLE_CONFIG = {
@@ -75,52 +54,104 @@ const STYLE_CONFIG = {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function buildStyleList(predictionResult) {
-  return LABEL_MAP.map((label, idx) => {
+  return LABEL_MAP.map((label) => {
     const prob = predictionResult.all_probabilities
-      ? predictionResult.all_probabilities[idx]
+      ? predictionResult.all_probabilities[label]
       : label === predictionResult.result
         ? parseFloat(predictionResult.percentage) / 100
         : 0;
-    return { label, probability: prob, percentage: (prob * 100).toFixed(1) };
+    return { label, probability: prob ?? 0, percentage: ((prob ?? 0) * 100).toFixed(1) };
   });
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+function ProbabilityBarChart({ styles }) {
+  const BAR_H = 28;
+  const GAP = 18;
+  const LABEL_W = 82;
+  const VALUE_W = 46;
+  const BAR_MAX_W = 200;
+  const svgW = LABEL_W + BAR_MAX_W + VALUE_W + 8;
+  const svgH = styles.length * (BAR_H + GAP) - GAP + 8;
 
-/**
- * SVG donut chart murni — berbasis vektor sehingga tercetak tajam di PDF.
- * Tidak menggunakan recharts agar tidak ada isu hydration saat print.
- */
-function DonutChart({ percentage, color, label }) {
-  const r = 72;
-  const circumference = 2 * Math.PI * r;
-  const filled = Math.min((percentage / 100) * circumference, circumference);
   return (
-    <svg viewBox="0 0 200 200" className="w-44 h-44 sm:w-52 sm:h-52 print:w-32 print:h-32">
-      {/* Track */}
-      <circle cx="100" cy="100" r={r} fill="none" stroke="#e5e7eb" strokeWidth="20" />
-      {/* Progress arc */}
-      <circle
-        cx="100" cy="100" r={r}
-        fill="none"
-        stroke={color}
-        strokeWidth="20"
-        strokeDasharray={`${filled} ${circumference}`}
-        strokeLinecap="round"
-        transform="rotate(-90 100 100)"
-      />
-      {/* Center text */}
-      <text x="100" y="93" textAnchor="middle" fontSize="26" fontWeight="800" fill={color}>
-        {percentage}%
-      </text>
-      <text x="100" y="112" textAnchor="middle" fontSize="9" fontWeight="600" fill="#9ca3af" letterSpacing="2">
-        {label.toUpperCase()}
-      </text>
+    <svg
+      viewBox={`0 0 ${svgW} ${svgH}`}
+      className="w-full max-w-xs sm:max-w-sm print:max-w-[260px]"
+      aria-label="Probability bar chart"
+    >
+      {styles.map((s, i) => {
+        const cfg = STYLE_CONFIG[s.label];
+        const pct = parseFloat(s.percentage);
+        const barW = Math.max(4, (pct / 100) * BAR_MAX_W);
+        const y = i * (BAR_H + GAP);
+        const isDominant = s.probability === Math.max(...styles.map((x) => x.probability));
+
+        return (
+          <g key={s.label}>
+            {/* Label */}
+            <text
+              x={LABEL_W - 8}
+              y={y + BAR_H / 2 + 5}
+              textAnchor="end"
+              fontSize="10"
+              fontWeight={isDominant ? "800" : "600"}
+              fill={isDominant ? cfg.color : "#6b7280"}
+              letterSpacing="0.5"
+            >
+              {s.label.toUpperCase()}
+            </text>
+
+            {/* Track */}
+            <rect
+              x={LABEL_W}
+              y={y}
+              width={BAR_MAX_W}
+              height={BAR_H}
+              rx={BAR_H / 2}
+              fill="#f3f4f6"
+            />
+
+            {/* Bar */}
+            <rect
+              x={LABEL_W}
+              y={y}
+              width={barW}
+              height={BAR_H}
+              rx={BAR_H / 2}
+              fill={cfg.color}
+              opacity={isDominant ? 1 : 0.45}
+            />
+
+            {/* Value */}
+            <text
+              x={LABEL_W + BAR_MAX_W + 6}
+              y={y + BAR_H / 2 + 5}
+              fontSize="10"
+              fontWeight={isDominant ? "800" : "600"}
+              fill={isDominant ? cfg.color : "#9ca3af"}
+            >
+              {s.percentage}%
+            </text>
+
+            {/* Crown/star indicator for dominant */}
+            {isDominant && (
+              <text
+                x={LABEL_W + barW - 14}
+                y={y + BAR_H / 2 + 5}
+                fontSize="11"
+                fill="white"
+                fontWeight="900"
+              >
+                ★
+              </text>
+            )}
+          </g>
+        );
+      })}
     </svg>
   );
 }
 
-/** Satu card strategi belajar dengan icon ilustrasi dari lucide-react. */
 function StrategyCard({ strategy, Icon, BgIcon, tw }) {
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col print-avoid-break">
@@ -155,14 +186,6 @@ function StrategyCard({ strategy, Icon, BgIcon, tw }) {
   );
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-/**
- * @param {{
- *   predictionResult: { result: string, percentage: string, all_probabilities?: number[] },
- *   studentData: { nama: string, kelas: string, no_absen: string } | null,
- *   onReset: Function,
- * }} props
- */
 export function ResultView({ predictionResult, studentData, onReset }) {
   const allStyles = buildStyleList(predictionResult);
   const dominant = allStyles.find((s) => s.label === predictionResult.result);
@@ -177,10 +200,10 @@ export function ResultView({ predictionResult, studentData, onReset }) {
       {/* ── Page title ─────────────────────────────────────────────────── */}
       <div className="text-center pt-6 pb-4 px-6 print:pt-4">
         <h1 className="text-4xl sm:text-5xl font-black leading-tight tracking-tight">
-          <span className="text-blue-950">STUDENT </span>
-          <span className="text-amber-500">LEARNING STYLE</span>
+          <span className="text-blue-950">HASIL </span>
+          <span className="text-blue-950">ANALISIS</span>
           <br />
-          <span className="text-blue-950">REPORT</span>
+          <span className="text-amber-500">GAYA BELAJAR</span>
         </h1>
       </div>
 
@@ -193,7 +216,7 @@ export function ResultView({ predictionResult, studentData, onReset }) {
             </div>
             <div>
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
-                Student Profile
+                Profil Siswa
               </p>
               <p className="text-sm font-black text-gray-900 uppercase leading-tight">
                 {studentData.nama}
@@ -203,7 +226,7 @@ export function ResultView({ predictionResult, studentData, onReset }) {
                   <School className="w-3 h-3" />{studentData.kelas}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Hash className="w-3 h-3" />Roll Number: {studentData.no_absen}
+                  <Hash className="w-3 h-3" />No. Absen: {studentData.no_absen}
                 </span>
               </div>
             </div>
@@ -211,48 +234,28 @@ export function ResultView({ predictionResult, studentData, onReset }) {
         </div>
       )}
 
-      {/* ── Donut chart + Dominant style info ──────────────────────────── */}
+      {/* ── Bar chart + Dominant style info ──────────────────────────── */}
       <div className="px-6 max-w-2xl mx-auto mb-6">
         <div className="flex flex-col sm:flex-row gap-6 items-center">
 
-          {/* Chart + legend */}
-          <div className="flex flex-col items-center gap-3 flex-shrink-0">
-            {dominant && (
-              <>
-                {/* Confidence badge */}
-                <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold ${cfg.tw.badge}`}>
-                  <span className="inline-block w-2 h-2 rounded-full bg-current" />
-                  {dominant.percentage}% Confidence
-                </div>
-
-                <DonutChart
-                  percentage={parseFloat(dominant.percentage)}
-                  color={cfg.color}
-                  label={dominant.label}
-                />
-              </>
-            )}
-
-            {/* Legend — semua gaya belajar */}
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-              {allStyles.map((s) => (
-                <span key={s.label} className="flex items-center gap-1.5 text-xs font-semibold text-gray-600">
-                  <span className={`w-2.5 h-2.5 rounded-full ${STYLE_CONFIG[s.label].tw.dot}`} />
-                  {s.label.toUpperCase()} ({s.percentage}%)
-                </span>
-              ))}
-            </div>
+          {/* Bar chart */}
+          <div className="flex flex-col items-start gap-3 flex-shrink-0 w-full sm:w-auto">
+            {/* Section label */}
+            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+              Probabilitas Gaya Belajar
+            </p>
+            <ProbabilityBarChart styles={allStyles} />
           </div>
 
           {/* Dominant info */}
           <div className="flex-1 text-center sm:text-left">
             <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${cfg.tw.badge} mb-4`}>
               <Zap className="w-3 h-3" />
-              Dominant Style
+              Gaya Belajar Dominan
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-black text-blue-950 leading-tight mb-1">
-              YOUR DOMINANT<br />LEARNING STYLE:
+              GAYA BELAJAR DOMINAN ANDA:
             </h2>
             <p className={`text-2xl sm:text-3xl font-black italic ${cfg.tw.text} mb-4`}>
               {dominant?.label.toUpperCase()}!
