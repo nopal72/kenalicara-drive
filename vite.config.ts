@@ -12,10 +12,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        // Semua chunk digabung ke satu file — wajib untuk GAS HtmlService
+        manualChunks: undefined,
         inlineDynamicImports: true,
-        entryFileNames: "index-[hash].js",
-        format: "iife",
       },
     },
   },
