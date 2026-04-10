@@ -1,98 +1,65 @@
-
 export const LEARNING_RECOMMENDATIONS = {
   // ── VISUAL ────────────────────────────────────────────────────────────────
   Visual: {
     description:
-      "[DUMMY] Kamu adalah pelajar Visual! Kamu menyerap informasi paling efektif melalui indera penglihatan. Teks tertulis, diagram, grafik, dan visualisasi adalah kunci keberhasilan belajarmu.",
-    strategies: [
-      {
-        title: "🗺️ Gunakan Mind Map & Diagram",
-        tips: [
-          "[DUMMY] Buat mind map untuk merangkum materi setelah selesai membaca",
-          "[DUMMY] Gambar diagram alur untuk memahami proses atau urutan kejadian",
-          "[DUMMY] Gunakan warna berbeda untuk setiap subtopik agar lebih mudah diingat",
-        ],
-      },
-      {
-        title: "🎨 Teknik Highlight & Color Coding",
-        tips: [
-          "[DUMMY] Tandai kata kunci dengan stabilo warna berbeda",
-          "[DUMMY] Buat catatan ringkas menggunakan warna dan simbol visual",
-          "[DUMMY] Tulis ulang materi penting dalam format tabel atau grafik",
-        ],
-      },
-      {
-        title: "📹 Manfaatkan Media Visual",
-        tips: [
-          "[DUMMY] Tonton video pembelajaran untuk materi yang sulit dipahami",
-          "[DUMMY] Gunakan aplikasi mind mapping seperti Canva atau MindMeister",
-          "[DUMMY] Buat flashcard bergambar untuk menghafal konsep penting",
-        ],
-      },
+      "Kamu adalah pelajar Visual! Kamu menyerap informasi paling efektif melalui indera penglihatan. Teks tertulis, diagram, grafik, dan visualisasi adalah kunci keberhasilan belajarmu.",
+    imageUrl: "https://kenalicara.vercel.app/_next/image?url=%2Fimages%2Fvisual.webp&w=1920&q=75",
+    studentStrategies: [
+      "Selalu menulis informasi yang didengar.",
+      "Membuat catatan dengan warna dan simbol.",
+      "Menggunakan grafik, bagan, atau diagram untuk menyajikan informasi dalam jumlah banyak.",
+      "Memanfaatkan video sebagai media pembelajaran."
     ],
+    teacherStrategies: [
+      "Gunakan media cetak berwarna dan pajang grafik informasi di dinding kelas sebagai referensi visual yang berkelanjutan.",
+      "Dorong siswa untuk menyusun peta konsep (mind map), diagram, dan gambar berwarna untuk memahami materi.",
+      "Berdiri tenang saat menyampaikan informasi kunci dan lakukan pergerakan hanya di antara segmen penjelasan agar perhatian siswa tetap terpusat.",
+      "Sediakan salinan materi berupa garis besar atau frasa kunci dengan ruang kosong bagi siswa untuk mencatat secara kreatif.",
+      "Terapkan pengodean warna pada materi dan perlengkapan belajar untuk mempermudah organisasi dan pengingatan.",
+      "Gunakan ikon atau simbol visual yang konsisten untuk mewakili konsep-konsep kunci dalam setiap presentasi."
+    ]
   },
 
   // ── AUDITORI ──────────────────────────────────────────────────────────────
   Auditori: {
     description:
-      "[DUMMY] Kamu adalah pelajar Auditori! Pendengaran adalah kekuatan utamamu. Kamu belajar paling baik melalui penjelasan lisan, diskusi, dan pengulangan verbal.",
-    strategies: [
-      {
-        title: "🎙️ Diskusi & Pengajaran Aktif",
-        tips: [
-          "[DUMMY] Ajari materi kepada teman sebayamu untuk memperkuat pemahaman",
-          "[DUMMY] Ikuti diskusi kelompok dan aktif bertanya di kelas",
-          "[DUMMY] Gunakan metode tanya-jawab saat belajar mandiri",
-        ],
-      },
-      {
-        title: "🎧 Rekam & Putar Ulang",
-        tips: [
-          "[DUMMY] Rekam penjelasan guru atau catatan kamu sendiri dengan suara",
-          "[DUMMY] Dengarkan rekaman tersebut saat beristirahat atau bepergian",
-          "[DUMMY] Baca materi pelajaran dengan suara nyaring untuk memperkuat ingatan",
-        ],
-      },
-      {
-        title: "🎶 Gunakan Musik & Ritme",
-        tips: [
-          "[DUMMY] Buat mnemonic atau jingle untuk menghafal rumus dan istilah",
-          "[DUMMY] Dengarkan musik instrumental saat belajar untuk meningkatkan fokus",
-          "[DUMMY] Hubungkan informasi baru dengan irama atau lagu yang sudah kamu kenal",
-        ],
-      },
+      "Kamu adalah pelajar Auditori! Pendengaran adalah kekuatan utamamu. Kamu belajar paling baik melalui penjelasan lisan, diskusi, dan pengulangan verbal.",
+    imageUrl: "https://kenalicara.vercel.app/_next/image?url=%2Fimages%2Fauditori.webp&w=1920&q=75",
+    studentStrategies: [
+      "Menggunakan perekam suara untuk merekam informasi yang disampaikan guru agar bisa didengar di rumah.",
+      "Membuat kelompok gaya belajar untuk mendiskusikan materi pembelajaran.",
+      "Mencari lingkungan yang tenang agar lebih mudah menyerap informasi yang didengar.",
+      "Membacakan materi pelajaran dengan keras atau menyanyikan materi pelajaran.",
+      "Mendengarkan kembali materi yang direkam atau dari penjelasan orang lain."
     ],
+    teacherStrategies: [
+      "Menggunakan variasi vokal (ritme, intonasi, dan volume suara) dalam menyampaikan materi pembelajaran.",
+      "Meminta siswa untuk mengulangi kembali konsep-konsep materi yang sudah dipelajari.",
+      "Mendorong siswa untuk membuat jembatan keledai untuk menghafal setiap kunci.",
+      "Menggunakan musik sebagai aba-aba untuk memulai sesuatu kegiatan.",
+      "Mendorong siswa untuk merekam informasi-informasi penting yang kemudian didengarkan kembali.",
+      "Mengizinkan siswa untuk berbicara perlahan pada saat sedang mempelajari konsep yang sedang dipahami."
+    ]
   },
 
   // ── KINESTETIK ────────────────────────────────────────────────────────────
   Kinestetik: {
     description:
-      "[DUMMY] Kamu adalah pelajar Kinestetik! Kamu belajar paling baik melalui gerakan, praktik langsung, dan pengalaman nyata. Keterlibatan fisik dan aktivitas adalah kunci suksesmu.",
-    strategies: [
-      {
-        title: "🔬 Praktik & Eksperimen Langsung",
-        tips: [
-          "[DUMMY] Cari kesempatan praktik langsung untuk setiap materi teori",
-          "[DUMMY] Buat proyek atau model fisik untuk memahami konsep abstrak",
-          "[DUMMY] Ikuti kegiatan laboratorium atau simulasi dengan penuh antusias",
-        ],
-      },
-      {
-        title: "🎭 Role Play & Simulasi",
-        tips: [
-          "[DUMMY] Perankan karakter atau situasi yang sedang dipelajari bersama teman",
-          "[DUMMY] Gunakan permainan edukatif atau kuis interaktif berbasis skenario",
-          "[DUMMY] Ciptakan situasi nyata untuk menerapkan isi materi pelajaran",
-        ],
-      },
-      {
-        title: "🚶 Belajar Sambil Bergerak",
-        tips: [
-          "[DUMMY] Baca atau hafal materi sambil berjalan perlahan di ruangan",
-          "[DUMMY] Gunakan gestur tangan saat menghafal urutan atau langkah-langkah",
-          "[DUMMY] Ambil jeda aktif setiap 25–30 menit sebelum melanjutkan belajar",
-        ],
-      },
+      "Kamu adalah pelajar Kinestetik! Kamu belajar paling baik melalui gerakan, praktik langsung, dan pengalaman nyata. Keterlibatan fisik dan aktivitas adalah kunci suksesmu.",
+    imageUrl: "https://kenalicara.vercel.app/_next/image?url=%2Fimages%2Fkinestetik.webp&w=1920&q=75",
+    studentStrategies: [
+      "Mencoba belajar sambil berjalan.",
+      "Menghadap ke dinding saat menjelaskan sebuah konsep.",
+      "Melakukan sesuatu sesuai dengan yang diucapkan.",
+      "Selalu mencatat informasi yang diajarkan.",
+      "Membuat eksperimen untuk mempraktikkan pengetahuan tertentu."
     ],
+    teacherStrategies: [
+      "Menggunakan alat bantu untuk memancing perhatian siswa.",
+      "Membuat sebuah simulasi agar siswa seperti merasakan konsep atau materi yang sedang diajarkan.",
+      "Disarankan untuk memberikan bimbingan duduk di sebelah siswa secara individu.",
+      "Berbicara secara pribadi dengan setiap siswa dapat membantu guru dalam memahami kebutuhan siswa.",
+      "Memperagakan konsep-konsep yang diajarkan dan memberi siswa kesempatan untuk memahaminya secara bertahap."
+    ]
   },
 };

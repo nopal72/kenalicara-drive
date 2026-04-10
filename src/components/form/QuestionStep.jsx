@@ -1,23 +1,12 @@
-import { ArrowLeft } from "lucide-react";
-import { Progress } from "@/components/ui/progress";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { EmojiAngry, EmojiFrown, EmojiNeutral, EmojiSmile, EmojiGrin } from "@/assets/emoji.jsx";
 
-/**
- * Step 1–3 – Menampilkan 5 pertanyaan per sesi dengan skala rating 1–5.
- *
- * @param {{
- *   questions: object[],
- *   currentStep: number,
- *   totalSteps: number,
- *   progressPercentage: number,
- *   register: Function,
- *   errors: object,
- *   watch: Function,
- *   onNext: Function,
- *   onPrev: Function,
- *   isLastStep: boolean,
- *   isSubmitting: boolean,
- * }} props
- */
+/** Ordered array of emoji components indexed by scale value (1-based). */
+const SCALE_EMOJIS = [null, EmojiAngry, EmojiFrown, EmojiNeutral, EmojiSmile, EmojiGrin];
+
+/** Label for each scale value. */
+const SCALE_LABELS = ["", "Sangat Tidak Setuju", "Tidak Setuju", "Netral", "Setuju", "Sangat Setuju"];
+
 export function QuestionStep({
   questions,
   currentStep,
@@ -31,124 +20,136 @@ export function QuestionStep({
   isLastStep,
   isSubmitting,
 }) {
-  const CategoryIcon = questions[0]?.icon;
-  const categoryName = questions[0]?.category ?? "";
+  /** Shared emoji radio per value. */
+  const EmojiOption = ({ question, value }) => {
+    const isSelected = watch(question.id) === String(value);
+    const EmojiIcon = SCALE_EMOJIS[value];
+    return (
+      <label className="cursor-pointer group" title={SCALE_LABELS[value]}>
+        <input
+          type="radio"
+          value={value}
+          {...register(question.id, { required: "Silakan pilih salah satu jawaban" })}
+          className="sr-only"
+        />
+        <EmojiIcon
+          className={`transition-all duration-200 select-none ${isSelected ? "w-10 h-10 sm:w-10 sm:h-10 drop-shadow-lg scale-110" : "w-10 h-10 sm:w-10 sm:h-10 grayscale brightness-75 opacity-60 group-hover:grayscale-0 group-hover:brightness-100 group-hover:opacity-90 group-hover:scale-105"}`}
+        />
+      </label>
+    );
+  };
 
   return (
-    <div className="bg-white shadow-xl rounded-2xl p-6 sm:p-8 border border-gray-100">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+    <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-sm">
+
+      {/* ── Top navigation row ── */}
+      <div className="flex items-center gap-4 mb-8">
         <button
           type="button"
           onClick={onPrev}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 transition-colors"
+          aria-label="Kembali"
         >
-          <ArrowLeft className="w-5 h-5 text-gray-700" />
+          <ArrowLeft className="w-4 h-4 text-slate-600" />
         </button>
-        <h1 className="font-semibold text-gray-900">Learning Style Discovery</h1>
-        <div className="w-9" />
-      </div>
 
-      {/* Progress bar */}
-      <div className="mb-10">
-        <div className="flex justify-between items-end mb-3">
-          <span className="text-sm font-medium text-gray-500">
-            Session {currentStep} of {totalSteps}
-          </span>
-          <span className="text-sm font-bold text-blue-600">
-            {Math.round(progressPercentage)}%
-          </span>
+        <div className="flex-1">
+          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-blue-400 rounded-full transition-all duration-500"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
         </div>
-        <Progress value={progressPercentage} className="h-2 bg-gray-100" />
+
+        <span className="text-xs font-semibold text-slate-400 tabular-nums shrink-0">
+          {currentStep}/{totalSteps}
+        </span>
       </div>
 
-      {/* Category badge */}
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-8 bg-blue-50 text-blue-600 rounded-full text-xs font-bold tracking-wider uppercase">
-        {CategoryIcon && <CategoryIcon className="w-4 h-4" />}
-        {categoryName}
-      </div>
+      {/* ── Session title & instruction ── */}
+      <h1 className="text-2xl font-bold text-slate-900 mb-1">
+        Sesi Kuesioner {currentStep}
+      </h1>
+      <p className="text-sm text-slate-500 mb-8 leading-relaxed">
+        Bacalah setiap pernyataan dan pilih emoji yang paling menggambarkan dirimu.
+      </p>
 
-      {/* Questions */}
-      <div className="space-y-12">
-        {questions.map((question) => (
+      <div className="space-y-8 sm:space-y-0">
+        {/* Scale label header row (Desktop only) */}
+        <div className="hidden sm:grid items-center mb-3 sm:grid-cols-[1fr_300px]">
+          <div /> {/* spacer for question column */}
+          <div className="flex justify-between items-center">
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-100 text-blue-600">
+              Sangat Tidak Sesuai
+            </span>
+            <span className="text-xs font-semibold px-3 py-1 rounded-full bg-blue-600 text-white">
+              Sangat Sesuai
+            </span>
+          </div>
+        </div>
+
+        {/* Question rows */}
+        {questions.map((question, index) => (
           <div
             key={question.id}
-            className="border-b border-gray-100 pb-10 last:border-b-0 last:pb-0"
+            className="flex flex-col sm:grid sm:items-center py-0 sm:py-4 border-b-0 sm:border-b sm:border-slate-100 last:border-b-0 sm:grid-cols-[1fr_300px] mb-8 sm:mb-0"
           >
-            <h2 className="text-xl sm:text-2xl font-extrabold text-gray-900 mb-8 leading-tight">
-              {question.label}
-            </h2>
+            {/* Question text */}
+            <p className="font-bold text-slate-800 text-base leading-snug mb-4 sm:mb-0 sm:pr-8">
+              {index + 1}.&nbsp;&nbsp;{question.label}
+            </p>
 
-            <div className="bg-white border border-gray-100 shadow-sm p-5 sm:p-8 rounded-2xl">
-              <div className="flex justify-between text-xs font-bold text-gray-400 tracking-widest mb-6">
-                <span>DISAGREE</span>
-                <span>AGREE</span>
-              </div>
-
-              <div className="flex justify-between items-center gap-1 sm:gap-4">
-                {[1, 2, 3, 4, 5].map((value) => {
-                  const isSelected = watch(question.id) === String(value);
-                  return (
-                    <label key={value} className="relative cursor-pointer group">
-                      <input
-                        type="radio"
-                        value={value}
-                        {...register(question.id, { required: "Silakan pilih salah satu jawaban" })}
-                        className="sr-only"
-                      />
-                      <div
-                        className={`w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center rounded-full border-2 text-base sm:text-xl font-medium transition-all duration-200
-                          ${
-                            isSelected
-                              ? "bg-blue-500 border-blue-500 text-white shadow-lg shadow-blue-500/30 transform scale-110"
-                              : "border-gray-200 text-gray-400 hover:border-blue-300 hover:bg-blue-50 group-hover:text-blue-500"
-                          }`}
-                      >
-                        {value}
-                      </div>
-                    </label>
-                  );
-                })}
-              </div>
-
-              {errors[question.id] && (
-                <p className="text-red-500 text-sm mt-4 text-center font-medium animate-pulse">
-                  {errors[question.id].message}
-                </p>
-              )}
+            {/* Mobile Scale labels (Hidden on Desktop) */}
+            <div className="flex justify-between text-xs text-slate-400 mb-2 px-1 sm:hidden">
+              <span>Sangat Tidak Sesuai</span>
+              <span>Sangat Sesuai</span>
             </div>
+
+            {/* 5 emoji inputs */}
+            <div className="flex justify-between items-center">
+              {[1, 2, 3, 4, 5].map((value) => (
+                <EmojiOption key={value} question={question} value={value} />
+              ))}
+            </div>
+
+            {/* Error — spans full width on desktop */}
+            {errors[question.id] && (
+              <p className="sm:col-span-2 text-red-500 text-xs mt-2 sm:mt-1 font-medium">
+                {errors[question.id].message}
+              </p>
+            )}
           </div>
         ))}
       </div>
 
-      {/* Navigation footer */}
-      <div className="flex items-center justify-between gap-4 mt-12 pt-6 border-t border-gray-100">
+      {/* ── Navigation footer ── */}
+      <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-100">
         <button
           type="button"
           onClick={onPrev}
-          className="px-5 py-3 rounded-xl font-semibold text-gray-700 bg-white border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all focus:ring-4 focus:ring-gray-100"
+          className="px-5 py-2.5 rounded-xl text-sm font-semibold text-slate-500 bg-slate-100 hover:bg-slate-200 transition-colors"
         >
-          Previous
+          Kembali
         </button>
 
         {!isLastStep ? (
           <button
             type="button"
             onClick={onNext}
-            className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg focus:ring-4 focus:ring-blue-200 transform hover:-translate-y-0.5"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors shadow-sm"
           >
-            Next
-            <ArrowLeft className="w-5 h-5 rotate-180" />
+            Lanjut
+            <ArrowRight className="w-4 h-4" />
           </button>
         ) : (
           <button
             type="submit"
             disabled={isSubmitting}
-            className={`inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg focus:ring-4 focus:ring-green-200 transform hover:-translate-y-0.5 ${
-              isSubmitting ? "opacity-70 cursor-wait" : ""
-            }`}
+            className={`px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-green-500 hover:bg-green-600 transition-colors shadow-sm ${isSubmitting ? "opacity-70 cursor-wait" : ""
+              }`}
           >
-            {isSubmitting ? "Submitting..." : "Submit Results"}
+            {isSubmitting ? "Menyimpan..." : "Kirim Hasil"}
           </button>
         )}
       </div>

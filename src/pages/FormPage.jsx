@@ -100,6 +100,20 @@ export default function FormPage() {
     reset();
   };
 
+  /** Set mock data for development purposes without deploying to GAS */
+  const handleMockResult = () => {
+    setStudentData({ nama: "Nopal (Mock)", kelas: "XII RPL 1", no_absen: "24", email: "nopal@example.com" });
+    setPredictionResult({
+      result: "Visual",
+      percentage: "75.4",
+      all_probabilities: {
+        Auditori: 0.15,
+        Kinestetik: 0.096,
+        Visual: 0.754
+      }
+    });
+  };
+
   return (
     <>
       {predictionResult ? (
@@ -110,8 +124,8 @@ export default function FormPage() {
           onReset={handleReset}
         />
       ) : (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 font-sans">
-          <div className="w-full max-w-2xl">
+        <div className="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 font-sans">
+          <div className="w-full max-w-lg sm:max-w-2xl mx-auto">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {currentStep === 0 && (
                 <IdentityStep register={register} errors={errors} onNext={handleNextStep} />
@@ -138,6 +152,17 @@ export default function FormPage() {
       )}
 
       {isSubmitting && <LoadingOverlay textIndex={loadingTextIndex} />}
+
+      {/* Dev Mode Floating Button */}
+      {import.meta.env.DEV && !predictionResult && (
+        <button
+          type="button"
+          onClick={handleMockResult}
+          className="fixed bottom-4 right-4 bg-purple-600 text-white px-4 py-2 rounded-xl shadow-lg font-bold text-xs sm:text-sm z-50 hover:bg-purple-700 hover:-translate-y-1 transition-all"
+        >
+          Dev: Mock Result
+        </button>
+      )}
     </>
   );
 
