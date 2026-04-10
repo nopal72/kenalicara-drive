@@ -1,7 +1,7 @@
 function doGet() {
   return HtmlService.createTemplateFromFile("index")
     .evaluate()
-    .setTitle("React-Apps-Script")
+    .setTitle("KenaliCara")
     .addMetaTag("viewport", "width=device-width, initial-scale=1");
 }
 

@@ -1,7 +1,6 @@
-// App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { routes } from "@/routes";
-import "./App.css";
+import "./index.css";
 
 function App() {
   return (

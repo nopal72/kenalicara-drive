@@ -1,40 +1,17 @@
-export function getSheetData(sheetName) {
-  return new Promise((resolve, reject) => {
-    google.script.run
-      .withSuccessHandler((res) => {
-        console.log(res);
-        resolve(res);
-      })
-      .withFailureHandler((msg) => {
-        console.log(msg);
-        reject(msg);
-      })
-      .getSheetData(sheetName);
-  });
-}
-
 export function submitForm(data) {
   return new Promise((resolve, reject) => {
     google.script.run
-      .withSuccessHandler((res) => {
-        resolve(res);
-      })
-      .withFailureHandler((msg) => {
-        reject(msg);
-      })
+      .withSuccessHandler(resolve)
+      .withFailureHandler(reject)
       .submitForm(data);
   });
 }
 
-export function testPredict() {
+export function getSheetData(sheetName) {
   return new Promise((resolve, reject) => {
     google.script.run
-      .withSuccessHandler((res) => {
-        resolve(res);
-      })
-      .withFailureHandler((msg) => {
-        reject(msg);
-      })
-      .testPredict();
+      .withSuccessHandler(resolve)
+      .withFailureHandler(reject)
+      .getSheetData(sheetName);
   });
 }
