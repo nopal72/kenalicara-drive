@@ -1,13 +1,6 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { SCALE_EMOJIS, SCALE_LABELS } from "@/assets/emoji.jsx";
 
-/**
- * Step 1–3 – Menampilkan 5 pertanyaan per sesi dengan skala emoji 1–5.
- *
- * Mobile  : pertanyaan stacked vertikal, label skala per pertanyaan.
- * Desktop : dua kolom — teks kiri, 5 emoji kanan — label skala tampil
- *           sekali sebagai header pills di atas kolom emoji.
- */
 export function QuestionStep({
   questions,
   currentStep,
