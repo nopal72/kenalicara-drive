@@ -100,6 +100,20 @@ export default function FormPage() {
     reset();
   };
 
+  /** Set mock data for development purposes without deploying to GAS */
+  const handleMockResult = () => {
+    setStudentData({ nama: "Nopal (Mock)", kelas: "XII RPL 1", no_absen: "24", email: "nopal@example.com" });
+    setPredictionResult({
+      result: "Visual",
+      percentage: "75.4",
+      all_probabilities: {
+        Auditori: 0.15,
+        Kinestetik: 0.096,
+        Visual: 0.754
+      }
+    });
+  };
+
   return (
     <>
       {predictionResult ? (
@@ -138,6 +152,17 @@ export default function FormPage() {
       )}
 
       {isSubmitting && <LoadingOverlay textIndex={loadingTextIndex} />}
+
+      {/* Dev Mode Floating Button */}
+      {import.meta.env.DEV && !predictionResult && (
+        <button
+          type="button"
+          onClick={handleMockResult}
+          className="fixed bottom-4 right-4 bg-purple-600 text-white px-4 py-2 rounded-xl shadow-lg font-bold text-xs sm:text-sm z-50 hover:bg-purple-700 hover:-translate-y-1 transition-all"
+        >
+          Dev: Mock Result
+        </button>
+      )}
     </>
   );
 
