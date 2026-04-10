@@ -1,5 +1,11 @@
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { SCALE_EMOJIS, SCALE_LABELS } from "@/assets/emoji.jsx";
+import { EmojiAngry, EmojiFrown, EmojiNeutral, EmojiSmile, EmojiGrin } from "@/assets/emoji.jsx";
+
+/** Ordered array of emoji components indexed by scale value (1-based). */
+const SCALE_EMOJIS = [null, EmojiAngry, EmojiFrown, EmojiNeutral, EmojiSmile, EmojiGrin];
+
+/** Label for each scale value. */
+const SCALE_LABELS = ["", "Sangat Tidak Setuju", "Tidak Setuju", "Netral", "Setuju", "Sangat Setuju"];
 
 export function QuestionStep({
   questions,

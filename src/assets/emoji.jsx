@@ -40,8 +40,3 @@ export function EmojiGrin({ className = "w-10 h-10" }) {
   )
 }
 
-/** Ordered array of emoji components indexed by scale value (1-based). */
-export const SCALE_EMOJIS = [null, EmojiAngry, EmojiFrown, EmojiNeutral, EmojiSmile, EmojiGrin];
-
-/** Label for each scale value. */
-export const SCALE_LABELS = ["", "Sangat Tidak Setuju", "Tidak Setuju", "Netral", "Setuju", "Sangat Setuju"];
