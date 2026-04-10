@@ -114,7 +114,7 @@ export function ResultView({ predictionResult, studentData, onReset }) {
             <div className="flex-1 w-full flex justify-center md:justify-end">
               <div className="w-full max-w-sm aspect-[4/3] bg-gray-50 flex items-center justify-center rounded-2xl overflow-hidden">
                 <img
-                  src="https://placehold.co/600x450/f8fafc/94a3b8?font=montserrat&text=Gambar+Dummy\n(Tunggu+Aset+Asli)"
+                  src={rec?.imageUrl}
                   alt="Ilustrasi Pembelajaran"
                   className="w-full h-full object-cover"
                 />

@@ -3,6 +3,7 @@ export const LEARNING_RECOMMENDATIONS = {
   Visual: {
     description:
       "Kamu adalah pelajar Visual! Kamu menyerap informasi paling efektif melalui indera penglihatan. Teks tertulis, diagram, grafik, dan visualisasi adalah kunci keberhasilan belajarmu.",
+    imageUrl: "https://kenalicara.vercel.app/_next/image?url=%2Fimages%2Fvisual.webp&w=1920&q=75",
     studentStrategies: [
       "Selalu menulis informasi yang didengar.",
       "Membuat catatan dengan warna dan simbol.",
@@ -23,6 +24,7 @@ export const LEARNING_RECOMMENDATIONS = {
   Auditori: {
     description:
       "Kamu adalah pelajar Auditori! Pendengaran adalah kekuatan utamamu. Kamu belajar paling baik melalui penjelasan lisan, diskusi, dan pengulangan verbal.",
+    imageUrl: "https://kenalicara.vercel.app/_next/image?url=%2Fimages%2Fauditori.webp&w=1920&q=75",
     studentStrategies: [
       "Menggunakan perekam suara untuk merekam informasi yang disampaikan guru agar bisa didengar di rumah.",
       "Membuat kelompok gaya belajar untuk mendiskusikan materi pembelajaran.",
@@ -44,6 +46,7 @@ export const LEARNING_RECOMMENDATIONS = {
   Kinestetik: {
     description:
       "Kamu adalah pelajar Kinestetik! Kamu belajar paling baik melalui gerakan, praktik langsung, dan pengalaman nyata. Keterlibatan fisik dan aktivitas adalah kunci suksesmu.",
+    imageUrl: "https://kenalicara.vercel.app/_next/image?url=%2Fimages%2Fkinestetik.webp&w=1920&q=75",
     studentStrategies: [
       "Mencoba belajar sambil berjalan.",
       "Menghadap ke dinding saat menjelaskan sebuah konsep.",
