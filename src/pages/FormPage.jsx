@@ -110,8 +110,8 @@ export default function FormPage() {
           onReset={handleReset}
         />
       ) : (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-8 px-4 sm:px-6 lg:px-8 font-sans">
-          <div className="w-full max-w-2xl">
+        <div className="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 font-sans">
+          <div className="w-full max-w-lg sm:max-w-2xl mx-auto">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {currentStep === 0 && (
                 <IdentityStep register={register} errors={errors} onNext={handleNextStep} />

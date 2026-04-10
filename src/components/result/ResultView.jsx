@@ -1,5 +1,7 @@
 import { useRef } from "react";
-import html2pdf from "html2pdf.js";
+import { useState } from "react";
+import jsPDF from "jspdf";
+import { toPng } from "html-to-image";
 import {
   Eye, Headphones, Activity,
   BookOpen, PenLine, MonitorPlay,
@@ -158,21 +160,35 @@ export function ResultView({ predictionResult, studentData, onReset }) {
   const cfg = STYLE_CONFIG[dominant?.label] ?? STYLE_CONFIG.Visual;
   const rec = LEARNING_RECOMMENDATIONS[dominant?.label];
 
-  const handleDownloadPDF = () => {
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadPDF = async () => {
     const element = contentRef.current;
     if (!element) return;
 
-    const filename = studentData?.nama
-      ? `Laporan_Gaya_Belajar_${studentData.nama.replace(/\s+/g, "_")}.pdf`
-      : "Laporan_Gaya_Belajar.pdf";
+    try {
+      setIsDownloading(true);
+      const filename = studentData?.nama
+        ? `Laporan_Gaya_Belajar_${studentData.nama.replace(/\s+/g, "_")}.pdf`
+        : "Laporan_Gaya_Belajar.pdf";
 
-    html2pdf().set({
-      margin: [8, 8, 8, 8],
-      filename,
-      image: { type: "jpeg", quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, logging: false },
-      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
-    }).from(element).save();
+      // Allow DOM modifications or styling fixes before taking snapshot if needed
+      await new Promise((resolve) => setTimeout(resolve, 300)); 
+
+      const dataUrl = await toPng(element, { quality: 0.95, pixelRatio: 2 });
+      
+      const pdf = new jsPDF("p", "mm", "a4");
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
+      
+      pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(filename);
+    } catch (err) {
+      console.error("Failed to generate PDF", err);
+      alert("Gagal membuat PDF. Silakan coba lagi.");
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -252,10 +268,11 @@ export function ResultView({ predictionResult, studentData, onReset }) {
       <div className="flex flex-col sm:flex-row gap-3 px-4 max-w-2xl mx-auto py-6">
         <button
           onClick={handleDownloadPDF}
-          className="flex-1 inline-flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-md hover:-translate-y-0.5"
+          disabled={isDownloading}
+          className={`flex-1 inline-flex items-center justify-center gap-2 bg-blue-900 hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition-all duration-200 shadow-md ${isDownloading ? "opacity-70 cursor-wait" : "hover:-translate-y-0.5"}`}
         >
           <Printer className="w-5 h-5" />
-          Unduh PDF
+          {isDownloading ? "Memproses PDF..." : "Unduh PDF"}
         </button>
         <button
           onClick={onReset}
