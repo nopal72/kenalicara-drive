@@ -40,7 +40,22 @@ const jsContent = fs.readFileSync(jsFile, "utf8");
 const jsHtmlPath = path.join(gasDir, "js.html");
 const cssHtmlPath = path.join(gasDir, "css.html");
 
-fs.writeFileSync(jsHtmlPath, `<script>${jsContent}</script>`);
+const b64 = Buffer.from(jsContent).toString('base64');
+const jsWrapper = `<script>
+  try {
+    var decoded = decodeURIComponent(escape(atob("${b64}")));
+    var script = document.createElement('script');
+    script.type = 'module';
+    script.textContent = decoded;
+    document.head.appendChild(script);
+  } catch (e) {
+    console.error("Failed to load JS bundle", e);
+  }
+</script>`;
+
+fs.writeFileSync(jsHtmlPath, jsWrapper);
 fs.writeFileSync(cssHtmlPath, `<style>${cssContent}</style>`);
+
+
 
 console.log("Created js.html and css.html in the gas directory successfully!");
