@@ -1,4 +1,4 @@
-import { Eye, Smartphone, Hand, User, GraduationCap } from "lucide-react";
+import { Eye, Smartphone, Hand, User, GraduationCap, Building } from "lucide-react";
 import { CONFIG } from "./resultUtils";
 
 export const ReportContent = ({ dominant, rec, cfg, allStyles, studentData, isPrintMode }) => {
@@ -16,6 +16,12 @@ export const ReportContent = ({ dominant, rec, cfg, allStyles, studentData, isPr
               {studentData?.nama || "Nama Siswa"}
             </h3>
             <div className={`flex flex-wrap items-center gap-2 sm:gap-3 font-medium text-gray-600 ${isPrintMode ? "mt-3 text-base" : "mt-2 text-sm"}`}>
+              {studentData?.sekolah && (
+                <span className="flex items-center gap-1.5">
+                  <Building className={isPrintMode ? "w-5 h-5 text-gray-400" : "w-4 h-4 text-gray-400"} /> {studentData.sekolah}
+                </span>
+              )}
+              {studentData?.sekolah && studentData?.kelas && <span className="text-gray-300">•</span>}
               {studentData?.kelas && (
                 <span className="flex items-center gap-1.5">
                   <User className={isPrintMode ? "w-5 h-5 text-gray-400" : "w-4 h-4 text-gray-400"} /> Kelas: {studentData.kelas}

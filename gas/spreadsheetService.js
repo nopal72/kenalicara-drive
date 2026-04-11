@@ -19,7 +19,7 @@ const QUESTION_LABELS = {
 };
 
 const ROW_KEYS = [
-  'timestamp', 'nama', 'kelas', 'no_absen', 'email',
+  'timestamp', 'nama', 'sekolah', 'kelas', 'no_absen', 'email',
   'a1', 'a2', 'a3', 'a4', 'a5',
   'v1', 'v2', 'v3', 'v4', 'v5',
   'k1', 'k2', 'k3', 'k4', 'k5',
