@@ -4,7 +4,7 @@ import { CONFIG } from "./resultUtils";
 export const ReportContent = ({ dominant, rec, cfg, allStyles, studentData, isPrintMode }) => {
   return (
     <div className={`bg-white ${isPrintMode ? "p-12 text-black w-[1024px]" : "p-0 sm:p-4"}`}>
-      
+
       {/* IDENTITAS SISWA & TANGGAL */}
       {(isPrintMode || studentData) && (
         <div className={`flex justify-between border-b-2 border-gray-100 ${isPrintMode ? "items-end mb-10 pb-6" : "flex-col sm:flex-row items-start sm:items-end mb-8 pb-4 gap-4"}`}>
@@ -62,7 +62,7 @@ export const ReportContent = ({ dominant, rec, cfg, allStyles, studentData, isPr
         <div className={`flex-1 w-full flex ${isPrintMode ? "justify-end" : "justify-center md:justify-end"}`}>
           <div className="w-full max-w-sm aspect-[4/3] bg-gray-50 flex items-center justify-center rounded-2xl overflow-hidden shadow-inner border border-gray-100">
             <img
-              src="https://placehold.co/600x450/f8fafc/94a3b8?font=montserrat&text=Gambar+Dummy\n(Tunggu+Aset+Asli)"
+              src={rec?.imageUrl}
               alt="Ilustrasi Pembelajaran"
               className="w-full h-full object-cover"
             />
