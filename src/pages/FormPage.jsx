@@ -21,6 +21,7 @@ import { submitForm } from "../server/gas";
 import { QUESTION_PAGES } from "../data/questions";
 import { useMultiStepForm } from "../hooks/useMultiStepForm";
 
+import { GuidelineStep } from "../components/form/GuidelineStep";
 import { IdentityStep } from "../components/form/IdentityStep";
 import { QuestionStep } from "../components/form/QuestionStep";
 import { LoadingOverlay } from "../components/form/LoadingOverlay";
@@ -62,10 +63,12 @@ export default function FormPage() {
   /** Validasi field pada step saat ini sebelum melanjutkan. */
   const handleNextStep = async () => {
     if (currentStep === 0) {
-      const valid = await trigger(["nama", "kelas", "no_absen", "email"]);
+      goNext();
+    } else if (currentStep === 1) {
+      const valid = await trigger(["nama", "sekolah", "kelas", "no_absen", "email"]);
       if (valid) goNext();
     } else {
-      const ids = QUESTION_PAGES[currentStep - 1].map((q) => q.id);
+      const ids = QUESTION_PAGES[currentStep - 2].map((q) => q.id);
       const valid = await trigger(ids);
       if (valid) goNext();
     }
@@ -79,7 +82,7 @@ export default function FormPage() {
       const response = JSON.parse(responseString);
 
       if (response.status === "success" && response.prediction) {
-        setStudentData({ nama: data.nama, kelas: data.kelas, no_absen: data.no_absen });
+        setStudentData({ nama: data.nama, sekolah: data.sekolah, kelas: data.kelas, no_absen: data.no_absen });
         setPredictionResult(response.prediction);
       } else {
         throw new Error(response.message || "Gagal mendapatkan hasil prediksi.");
@@ -102,7 +105,7 @@ export default function FormPage() {
 
   /** Set mock data for development purposes without deploying to GAS */
   const handleMockResult = () => {
-    setStudentData({ nama: "Nopal (Mock)", kelas: "XII RPL 1", no_absen: "24", email: "nopal@example.com" });
+    setStudentData({ nama: "Nopal (Mock)", sekolah: "SMK Triskill Cendekia", kelas: "XII RPL 1", no_absen: "24", email: "nopal@example.com" });
     setPredictionResult({
       result: "Visual",
       percentage: "75.4",
@@ -126,21 +129,31 @@ export default function FormPage() {
       ) : (
         <div className="min-h-screen bg-slate-100 py-8 px-4 sm:px-6 font-sans">
           <div className="w-full max-w-lg sm:max-w-2xl mx-auto">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault(); // Matikan auto-submit form sepenuhnya
+              }} 
+              className="space-y-6"
+            >
               {currentStep === 0 && (
-                <IdentityStep register={register} errors={errors} onNext={handleNextStep} />
+                <GuidelineStep onNext={handleNextStep} />
               )}
 
-              {currentStep > 0 && currentStep <= TOTAL_STEPS && (
+              {currentStep === 1 && (
+                <IdentityStep register={register} errors={errors} onNext={handleNextStep} onPrev={goPrev} />
+              )}
+
+              {currentStep > 1 && currentStep <= TOTAL_STEPS && (
                 <QuestionStep
-                  questions={QUESTION_PAGES[currentStep - 1]}
-                  currentStep={currentStep}
-                  totalSteps={TOTAL_STEPS}
+                  questions={QUESTION_PAGES[currentStep - 2]}
+                  currentStep={currentStep - 1} // Sesi 1, 2, 3
+                  totalSteps={3}                // Total kuesioner
                   progressPercentage={progressPercentage}
                   register={register}
                   errors={errors}
                   watch={watch}
                   onNext={handleNextStep}
+                  onFinalSubmit={handleSubmit(onSubmit)}
                   onPrev={goPrev}
                   isLastStep={isLastStep}
                   isSubmitting={isSubmitting}
