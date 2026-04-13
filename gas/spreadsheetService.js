@@ -16,6 +16,9 @@ const QUESTION_LABELS = {
   k3: 'Saya senang belajar di kelas dengan melakukan eksperimen.',
   k4: 'Saya lebih memahami materi di kelas ketika saya ikut serta dalam peran-peran.',
   k5: 'Saya belajar paling baik di kelas ketika saya dapat berpartisipasi dalam kegiatan yang terkait.',
+  auditory: 'Probabilitas Auditori',
+  visual: 'Probabilitas Visual',
+  kinestetik: 'Probabilitas Kinestetik',
 };
 
 const ROW_KEYS = [
@@ -23,7 +26,7 @@ const ROW_KEYS = [
   'a1', 'a2', 'a3', 'a4', 'a5',
   'v1', 'v2', 'v3', 'v4', 'v5',
   'k1', 'k2', 'k3', 'k4', 'k5',
-  'hasil_prediksi', 'persentase_keyakinan'
+  'auditory', 'visual', 'kinestetik'
 ];
 
 function saveSubmission(formData, prediction) {
@@ -41,8 +44,9 @@ function saveSubmission(formData, prediction) {
 
   const row = ROW_KEYS.map(k => {
     if (k === 'timestamp') return new Date();
-    if (k === 'hasil_prediksi') return prediction.result;
-    if (k === 'persentase_keyakinan') return prediction.confidence;
+    if (k === 'auditory') return (prediction.all_probabilities.Auditori * 100).toFixed(2) + '%';
+    if (k === 'visual') return (prediction.all_probabilities.Visual * 100).toFixed(2) + '%';
+    if (k === 'kinestetik') return (prediction.all_probabilities.Kinestetik * 100).toFixed(2) + '%';
     return formData[k] || '';
   });
 
